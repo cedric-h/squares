@@ -1,0 +1,16 @@
+{
+  "name": "squaresoflearning",
+  "version": "1.0.0",
+  "description": "a quick API I made for teaching people programming",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Cedric Hutchings",
+  "license": "ISC",
+  "dependencies": {
+    "p2": "^0.7.1",
+    "ws": "^6.0.0"
+  }
+}
