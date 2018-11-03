@@ -1,10 +1,15 @@
 const WebSocket = require('ws');
- 
+const Client = require("./client.js");
+const p2 = require('p2');
+const present = require('present');
+
+//server
 const wss = new WebSocket.Server({ port: 8080 });
 
-const Client = require("./client.js");
 
-const p2 = require('p2');
+//update rates
+let clientsFps = 1 / (process.argv[3] || 20)
+let physicsFps = 1 / (process.argv[4] || 60)
 
 
 //physics set up
@@ -21,25 +26,20 @@ world.addBody(groundBody);
 let rectangleCount = 0;//number of rectangles ever made
 let rectangles = [];
 
-function Rectangle()
-{
-	this.mass = 1;
-	
-	this.position = [0, 5];
+function Rectangle() {
+	this.mass 		= 1;
+	this.position 	= [0, 5];
+	this.size 		= [0.4, 0.4];
 
-	this.color = "pink";
-
-	this.name = "ced";
-
-	this.size = [0.4, 0.4];
+	this.color 		= "pink";
+	this.name 		= "ced";
 }
 
 
 //networking set up
 let clients = [];
 
-wss.on('connection', function connection(ws)
-{
+wss.on('connection', function connection(ws) {
 	let client = new Client();
 	client.initialize(ws);
 
@@ -47,15 +47,13 @@ wss.on('connection', function connection(ws)
 
 	client.send('connectionEstablished');
 
-	rectangles.forEach(rect =>
-	{
+	rectangles.forEach(rect => {
 		let noPhysicsRect = Object.assign({}, rect);
 		delete noPhysicsRect.body;
 		client.send('newRect', noPhysicsRect);
 	});
 
-	client.on('makeRect', data =>
-	{
+	client.on('makeRect', data => {
 		let rectangleParameters = data.data;
 		let rectangle = Object.assign(new Rectangle(), rectangleParameters);
 
@@ -69,7 +67,8 @@ wss.on('connection', function connection(ws)
 		//physics that rectangle
 		rectangle.body = new p2.Body({
 			mass: rectangle.mass,
-			position: rectangle.position
+			position: rectangle.position,
+			velocity: rectangle.velocity
 		});
 		rectangle.body.addShape(new p2.Box({
 			width: 	rectangle.size[0],
@@ -82,8 +81,7 @@ wss.on('connection', function connection(ws)
 		client.send('rectMade' + data.count, rectangleCount);
 	});
 
-	client.on('set', data =>
-	{
+	client.on('set', data => {
 		let target = rectangles.filter(rectangle => rectangle.uuid === data.uuid)[0];
 		target.body[data.whatToSet] = data.whatToSetTo;
 	});
@@ -91,16 +89,23 @@ wss.on('connection', function connection(ws)
 
 
 //physics loop
+let lastTime = present() / 1000;
 setInterval(
-	() =>
-	{
-		world.step(1/20);
+	() => {
+		let time = present() / 1000;
+		world.step(physicsFps, time - lastTime, 10);
+		lastTime = time;
+	},
+	physicsFps * 1000
+);
 
-		let rectanglesUpdateData = rectangles.map(rectangle =>
-		{
+setInterval(
+	() => {
+		let rectanglesUpdateData = rectangles.map(rectangle => {
+
 			return {
-				position: rectangle.body.position,
-				angle: rectangle.body.angle
+				position: rectangle.body.interpolatedPosition,
+				angle: rectangle.body.interpolatedAngle
 			};
 		});
 
@@ -108,5 +113,5 @@ setInterval(
 			client.send('orientationsUpdate', rectanglesUpdateData);
 		});
 	},
-	1000/20
+	clientsFps * 1000
 );
