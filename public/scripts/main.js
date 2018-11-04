@@ -52,7 +52,8 @@ requirejs(["cedlib"], cedlib => {
                 color: "cyan",
                 mass: 0,
                 size: [0.215, 0.6],
-                velocity: [0, .2]
+                velocity: [0, .2],
+                angularVelocity: 2
             }
         }
 
