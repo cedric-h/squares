@@ -65,11 +65,7 @@ wss.on('connection', function connection(ws) {
 		);
 
 		//physics that rectangle
-		rectangle.body = new p2.Body({
-			mass: rectangle.mass,
-			position: rectangle.position,
-			velocity: rectangle.velocity
-		});
+		rectangle.body = new p2.Body(rectangle);
 		rectangle.body.addShape(new p2.Box({
 			width: 	rectangle.size[0],
 			height: rectangle.size[1]
