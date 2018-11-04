@@ -22,13 +22,17 @@ define(() =>
 
 
 	//render
-	return function(rectangles)
+	return function(rectangles, colors)
 	{
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = colors.sky;
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 		ctx.save();
         ctx.translate(canvas.width/2, canvas.height - 50);
         ctx.scale(50, -50);
+
+        ctx.fillStyle = colors.ground;
+		ctx.fillRect(-100, -.5, 200, -10);
 
 		rectangles.forEach(rect =>
 		{

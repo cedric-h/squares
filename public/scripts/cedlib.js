@@ -28,11 +28,12 @@ define(["render", "connectTo"], (render, connectTo) =>
 	{
 		requestAnimationFrame(update);
 
-		render(rectangles);
+		render(rectangles, cedlib.colors);
 	});
 
 
-	return {
+	let cedlib = {
+		colors: {},
 		connect: address =>
 		{
 			server = connectTo(address);
@@ -107,5 +108,32 @@ define(["render", "connectTo"], (render, connectTo) =>
         		[length, length]
         	);
         }
-	}
+	};
+
+	let skies = [
+		"mediumturquoise",
+		"paleturquoise",
+		"deepskyblue",
+		"aliceblue",
+		"lightcyan",
+		"#20b2aa"
+	];
+
+	let grounds = [
+		"goldenrod",
+		"lime",
+		"gray",
+		"springgreen",
+		"khaki",
+		"rosybrown",
+		"mediumseagreen", 
+		"limegreen",
+		"chartreuse",
+		"darkslategray",
+	]
+
+	cedlib.colors.sky = skies[Math.floor(Math.random() * skies.length)];
+	cedlib.colors.ground = grounds[Math.floor(Math.random() * grounds.length)];
+
+	return cedlib;
 });

@@ -37,7 +37,7 @@ requirejs(["cedlib"], cedlib => {
             ],
     		config: {
     			name: "House",
-	            color: "green",
+	            color: "crimson",
 	            mass: 0.5,
 	            size: [1.3, 0.75]
 	        }
@@ -83,7 +83,7 @@ requirejs(["cedlib"], cedlib => {
             position: cedlib.getPhysicsCoords(event),
             name: "missle",
             size: [0.2, 0.2],
-            color: "red"
+            color: "lightgrey"
 
         }).then( (rect) => {
 
